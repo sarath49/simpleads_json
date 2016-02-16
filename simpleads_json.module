@@ -19,6 +19,12 @@ function simpleads_json_menu() {
   );
 }
 
+/**
+ * Page Callback.
+ * 
+ * @return type json mixed
+ *   JSON result related to query
+ */
 function simpleads_json_output() {
   
   $output = '';
@@ -86,7 +92,6 @@ function _simpleads_json_query_result($date) {
   $query->join('field_data_field_ad_date', 'd', 'n.nid = d.entity_id');
   $query->fields('n', $node)
       ->fields('d', $field_ad_date)
-      ->condition('n.status', 1, '=')
       ->condition('d.field_ad_date_value', $date['start'], '>=');
   if($date['end'] != '') {
     $query->condition('d.field_ad_date_value2', $date['end'], '<=');
