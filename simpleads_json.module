@@ -13,7 +13,7 @@ function simpleads_json_menu() {
   return array(
     'simpleads/json' => array(
       'page callback' => 'simpleads_json_output',
-      'access arguments' => TRUE,
+      'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     ),
   );
@@ -33,9 +33,11 @@ function simpleads_json_output() {
   
   switch ($valid) {
     case TRUE:
-        $output = drupal_json_output(array('start' => $_GET['start'],));
+
+      $output = drupal_json_output(_simpleads_json_query_result($date));
       break;
     case FALSE:
+      
         $output = drupal_json_output(array('error' => 'invalid request',));
       break;
   }
@@ -58,9 +60,38 @@ function simpleads_json_output() {
 function _simpleads_json_check_format($date) {
  
   return ($date['end'] != '') ? 
-    ((((DateTime::createFromFormat('m/d/Y', $date['start']) !== FALSE)
-      && DateTime::createFromFormat('m/d/Y', $date['end']) !== FALSE)) ?
+    ((((DateTime::createFromFormat('Y-m-d', $date['start']) !== FALSE)
+      && DateTime::createFromFormat('Y-m-d', $date['end']) !== FALSE)) ?
         TRUE : FALSE) : 
-    ((DateTime::createFromFormat('m/d/Y', $date['start']) !== FALSE) ?
+    ((DateTime::createFromFormat('Y-m-d', $date['start']) !== FALSE) ?
       TRUE : FALSE);
+}
+
+/**
+ * Returns the fetched query from database.
+ * 
+ * @param type $date array mixed
+ *   start date and probably end date 
+ * 
+ * @return type array mixed
+ *   an array contaning information on published ads.
+ */
+function _simpleads_json_query_result($date) {
+  
+  $node = array('title', 'nid', 'status');
+  
+  $field_ad_date = array('field_ad_date_value', 'field_ad_date_value2');
+  
+  $query = db_select('node', 'n');
+  $query->join('field_data_field_ad_date', 'd', 'n.nid = d.entity_id');
+  $query->fields('n', $node)
+      ->fields('d', $field_ad_date)
+      ->condition('n.status', 1, '=')
+      ->condition('d.field_ad_date_value', $date['start'], '>=');
+  if($date['end'] != '') {
+    $query->condition('d.field_ad_date_value2', $date['end'], '<=');
+  }
+  $query->orderBy('n.nid');
+  
+  return $query->execute()->fetchall();
 }
