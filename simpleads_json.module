@@ -24,16 +24,16 @@ function simpleads_json_output() {
   $output = '';
   
   $date = array(
-    'start_date' => isset($_GET['startdate']) ? $_GET['startdate'] : '',
-    'end_date' => isset($_GET['enddate']) ? $_GET['enddate'] : '',
+    'start' => isset($_GET['start']) ? $_GET['start'] : '',
+    'end' => isset($_GET['end']) ? $_GET['end'] : '',
   );
   
-  $valid = (isset($_GET['startdate']) && _simpleads_json_check_format($date))
+  $valid = (isset($_GET['start']) && _simpleads_json_check_format($date))
       ? TRUE : FALSE;
   
   switch ($valid) {
     case TRUE:
-        $output = drupal_json_output(array('startdate' => $_GET['startdate'],));
+        $output = drupal_json_output(array('start' => $_GET['start'],));
       break;
     case FALSE:
         $output = drupal_json_output(array('error' => 'invalid request',));
@@ -43,8 +43,24 @@ function simpleads_json_output() {
   return $output;
 }
 
-function _simpleads_json_output($date) {
-  $valid = FALSE;
-  
-  return $valid;
+/**
+ * Check supplied date format.
+ * 
+ * @param type $date array mixed
+ *  contains start date and probably end date.
+ * 
+ * @return type boolean
+ *   - TRUE
+ *      if date format is correct.
+ *   - FALSE
+ *      if date format is incorrect. 
+ */
+function _simpleads_json_check_format($date) {
+ 
+  return ($date['end'] != '') ? 
+    ((((DateTime::createFromFormat('m/d/Y', $date['start']) !== FALSE)
+      && DateTime::createFromFormat('m/d/Y', $date['end']) !== FALSE)) ?
+        TRUE : FALSE) : 
+    ((DateTime::createFromFormat('m/d/Y', $date['start']) !== FALSE) ?
+      TRUE : FALSE);
 }
