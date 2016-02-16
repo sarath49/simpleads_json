@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * 
+ * Provides JSON data on SimpleAds.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function simpleads_json_menu() {
+  return array(
+    'simpleads/json' => array(
+      'page callback' => 'simpleads_json_output',
+      'access arguments' => TRUE,
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+function simpleads_json_output() {
+  
+  $output = '';
+  
+  $date = array(
+    'start_date' => isset($_GET['startdate']) ? $_GET['startdate'] : '',
+    'end_date' => isset($_GET['enddate']) ? $_GET['enddate'] : '',
+  );
+  
+  $valid = (isset($_GET['startdate']) && _simpleads_json_check_format($date))
+      ? TRUE : FALSE;
+  
+  switch ($valid) {
+    case TRUE:
+        $output = drupal_json_output(array('startdate' => $_GET['startdate'],));
+      break;
+    case FALSE:
+        $output = drupal_json_output(array('error' => 'invalid request',));
+      break;
+  }
+  
+  return $output;
+}
+
+function _simpleads_json_output($date) {
+  $valid = FALSE;
+  
+  return $valid;
+}
