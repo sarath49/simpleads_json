@@ -7,14 +7,37 @@
  */
 
 /**
+ * Implements hook_permission
+ */
+function simpleads_json_permission() {
+  return array(
+    // Permission for setting SimpleAds JSON access key.
+    'simpleads_json accesskey' => array(
+      'title' => t('Administer SimpleAds JSON'),
+      'description' => t('Perform administration task for SimpleAds JSON'),
+    ),
+  );
+}
+
+/**
  * Implements hook_menu().
  */
 function simpleads_json_menu() {
   return array(
+    // Menu for JSON output.
     'simpleads/json' => array(
       'page callback' => 'simpleads_json_output',
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
+    ),
+    // Menu for SimpleAds JSON configuration page.
+    'admin/config/services/simpleads-json' => array(
+      'title' => 'SimpleAds JSON',
+      'description' => 'SimpleAds JSON configuration',
+      'page callback' => 'simpleads_json_admin_config',
+      'access arguments' => array('simpleads_json accesskey'),
+      'file' => 'simpleads_json.admin.inc',
+      'file path' => drupal_get_path('module', 'simpleads_json') . '/includes/',
     ),
   );
 }
@@ -27,27 +50,39 @@ function simpleads_json_menu() {
  */
 function simpleads_json_output() {
   
+  // Check if key is set or key matches to our key else return access denied page.
+  if (!isset($_GET['key']) || 
+      $_GET['key'] != variable_get('simpleads_json_key')) {
+     return MENU_ACCESS_DENIED;
+  }
+
+  // Variable for storing JSON result.
   $output = '';
   
-  $date = array(
+  // Save the request value in array.
+  $data = array(
     'start' => isset($_GET['start']) ? $_GET['start'] : '',
     'end' => isset($_GET['end']) ? $_GET['end'] : '',
   );
   
-  $valid = (isset($_GET['start']) && _simpleads_json_check_format($date))
+  // Check if date is in correct format.
+  $valid = (isset($_GET['start']) && _simpleads_json_check_format($data))
       ? TRUE : FALSE;
   
   switch ($valid) {
+    // If date format is correct.
     case TRUE:
-
-      $output = drupal_json_output(_simpleads_json_query_result($date));
+      // Send out the result we obtain from query.
+      $output = drupal_json_output(_simpleads_json_query_result($data));
       break;
+    // If date format is incorrect.
     case FALSE:
-      
+        // Send out invalid request in JSON.
         $output = drupal_json_output(array('error' => 'invalid request',));
       break;
   }
   
+  // Final result to be displayed on page.
   return $output;
 }
 
