@@ -10,7 +10,6 @@
  * @return type array mixed
  */
 function simpleads_json_admin_config() { 
-  /*
   return system_settings_form(array(
     'simpleads_json_key' => array(
       '#type' => 'textfield',
@@ -20,15 +19,4 @@ function simpleads_json_admin_config() {
       '#required' => TRUE,
     ),
   ));
-   * /
-   */
-  $form['simpleads_json_key'] = array(
-    '#type' => 'textfield',
-    '#title' => t('SimpleAds JSON access key'),
-    '#description' => t('Access key for accessing SimpelAds JSON information'),
-    '#default_value' => variable_get('simpleads_json_key', ''),
-    '#required' => TRUE,
-  );
-  
-  return system_settings_form($form);
 }
