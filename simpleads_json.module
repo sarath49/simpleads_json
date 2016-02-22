@@ -34,7 +34,8 @@ function simpleads_json_menu() {
     'admin/config/services/simpleads-json' => array(
       'title' => 'SimpleAds JSON',
       'description' => 'SimpleAds JSON configuration',
-      'page callback' => 'simpleads_json_admin_config',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('simpleads_json_admin_config_form'),
       'access arguments' => array('simpleads_json accesskey'),
       'file' => 'simpleads_json.admin.inc',
       'file path' => drupal_get_path('module', 'simpleads_json') . '/includes/',
