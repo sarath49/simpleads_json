@@ -13,5 +13,5 @@ function simpleads_json_uninstall() {
   // Deletes the SimpleAds JSON key.
   variable_del('simpleads_json_key');
   // Set message after successful deletion of variable from database.
-  drupal_set_message($t('SimpleAds JSON successfully uninstalled.'), 'status');
+  drupal_set_message($t('SimpleAds JSON variable deleted.'), 'status');
 }
