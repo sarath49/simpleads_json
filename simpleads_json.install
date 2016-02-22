@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * SimpleAds JSON Install file.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function simpleads_json_uninstall() {
+  $t = get_t();
+  // Deletes the SimpleAds JSON key.
+  variable_del('simpleads_json_key');
+  // Set message after successful deletion of variable from database.
+  drupal_set_message($t('SimpleAds JSON successfully uninstalled.'), 'status');
+}
